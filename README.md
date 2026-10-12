@@ -39,8 +39,9 @@ Then open:
 - UI: <http://localhost:8080>
 - API docs (OpenAPI): <http://localhost:8000/api/v1/docs>
 
-`make bootstrap` runs `build`, `psqlmigrate` and `up` in one go. Change the passwords in `.env`
-before exposing the stack anywhere.
+`make bootstrap` runs `build`, `psqlmigrate` and `up` in one go.
+
+**Remember to change the passwords in `.env` before exposing the stack anywhere.**
 
 ## Using it
 
