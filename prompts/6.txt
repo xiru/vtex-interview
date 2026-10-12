@@ -1,0 +1,3 @@
+Pico CSS is no longer maintained. replace it by a library that is safe, popular and well maintained.
+
+Same concern apply for all the other stack decisions. Make sure that all the technology stack is well maintained and no major security concerns are know.

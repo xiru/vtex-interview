@@ -1,0 +1,3 @@
+make sure that all the code is properly tested with unit tests, check code coverage and lint, make scripts to run tests in a simplified way and, if all the tests pass, build a docker image,
+
+update the final plan for final review. no code yet.

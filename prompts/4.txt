@@ -1,0 +1,11 @@
+Good idea. Add the --all-files option combined with the --since option.
+
+Another detail (just to make sure its clear): it is OK to support the "import undo --md5 ... " without the --seller option (in this case, we should undo all the content of the file, processing all the sellers).
+
+Beyond the FastAPI and click based commands, add a simple user interface that consumes the APIs and shows a page where you can browse the catalog of products, sellers, categories and brands (you click a brand and list all the products of that brand and what sellers sells each product, you click a category and shows all the products of that category and all the sellers selling products of that category, you click a seller and show its catalog of products). Also, create a simple user interface for imports.
+
+Important: user interface is read only. No data should be changed in any way using the user interface.
+
+The user interface could be designed as a different software project, If can be done using javascript and the simplest framework to design the look and feel and consume the API.
+
+Update the plan. No code yet.

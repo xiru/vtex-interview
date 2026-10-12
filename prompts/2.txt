@@ -1,0 +1,15 @@
+Consider the following points and update the PLAN.md properly (so I can review it one more time):
+
+- Consider records with invalid UUID should be ignored. In these situations, let's log (using standard python logs) and do not process the invalid records.
+- Consider records with SQL injection or data with potential javascript code (possible XSS attacks) also should be ignored, loged and not be imported. Malformed data should be properly covered in a specific code module with extensive unit testing (feel free to suggest consolidated libraries that deal with this challenge properly).
+- Since the database already contains duplicated data (ike simplehuman/Simplehuman and Black+Decker/BLACK+DECKER) we should create an extra command like command to list them and enable merge duplicate products (we should be able to say, with command line options, what product is the right one and which one is the duplicate).
+- As suggested, instead of using seller-id as parameter, let's adopt the sellername (in the comand line parameters and API calls). However, we should have a table to have sellers (so we can potentially change a seller name with minimal impact).
+- I'm ok with Brand and category case rules be enforced by the database. 
+- Regarding undoing a wrong-seller import, consider to have a timestamp (or a time window) and rollback multiple imports. We should be able to say, in a command line option something like: undo all the imported changed on a given seller in the last 2 days.
+- To avoid problems with external dependencies, instead of delete records (from product and sellerproduct tables) adopt an extra column "active" (a boolean) that would be set to false when a product is "removed" given an import undo procedure. Products with active false should not be listed on APIs (except if an expect show_innactice flag is informed).
+- Regarding the --seller-id as a parameter while importing a file, ignore this idea. Let's respect the file content (where we will have the SellerName). This way, we may import data from multiple sellers in a single import procedure. However, remember we should be able to rollback imports or wrong tiles (where multiple sellers are possible) so we should be able to undo by file.
+- For the existing catalog of products, let's consider the "house" as the seller id number 1.
+- Regarding how aggressively to merge brands, it is OK to ignore case, accents and punctuation, considering, for example, Amazon Basics/AmazonBasics the same thing. Same strategy may be used for product names, brands and categories (for consistency, we should use the same algorithm on all 3 dimensions). We should enforce, at least partially, this constraint on database and the import algorithm should do the extra validations.
+
+
+Do not product code yet.

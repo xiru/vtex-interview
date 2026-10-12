@@ -1,0 +1,10 @@
+No need to implement ci support using github actions. This part can be removed from the project.
+
+Regarding UUID validations, we don't need to be super strict. The suggestion in the plan that rejects only 3 records is acceptable, but we can add a configuration flag in the code to turn the UUID validations more strict, so we can eventually start accepting only real and valid UUID. Review the plan and let's focus on UUID v7.
+
+The idea of using Makefiles is good. Let's do that as suggested.
+
+The usage of shellcheck is OK, but hadolint is not strictly needed. Use it if it does not too much extra complexity.
+
+I installed the docker-compose-v2 support. Let's adopt docker compose as the standard way to bootstrap environments.
+

@@ -1,0 +1,3 @@
+we should be good to go for a first version. produce a final PLAN.md file, with all the decisions take. If some question is open, go ahead with the default behavior suggested.
+
+no code yet, just produce the final plan.

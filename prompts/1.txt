@@ -1,0 +1,54 @@
+A traditional e-commerce company will start operating as a marketplace (a store that sells products from other stores). Marketplaces frequently receive product catalogs from multiple sellers (stores that sell their products on the marketplace).
+
+Currently, this company has a product catalog that contains all the items it sells. The store must be capable of receiving products from different sellers and adding them to its catalog. It is important to note that it is common for a product to be sold by several stores. Each seller registers their own products, so there may be slight variations in the information for the same item across different stores. Duplicating items is undesirable. However, it is crucial to record which sellers offer each product.
+
+You will receive a SQLite database populated with products (on ./data/catalog.db). This database has only 2 tables: a product table and a table to link products to sellers.
+
+The Product table contains the following collumns: Id (integer, auto increment, primary key) and Name, Brand, Category (all 3 text fields and only the name field is not null).
+
+The table to link products to sellers is called SellerProduct and contains the following collumns: Id (integer, auto increment, primary key), SellerName (text, not null), ProductId (integer, not null), SellerProductId (integer, not null).
+
+The database modelling is debatable, so we will need to write a migration script to change its structure. The main problem that requires a fix is using SellerName as the identifier for sellers. Instead, we need to create a table Seller with an Id and Name collumns. We also need to add an UUID4 column to the Product table.
+
+We will also need to create an extra table SellerProduct containg the following collumns: Id (integer, auto increment, primary key), SellerId (integer), UUID4, name, brand and Category.
+
+Keep the field names case consistent across all the tables.
+
+This project will implement a catalog consolidation system that receives a file containing products from different sellers and saves them to the catalog database. An example seller product catalog is on ./data/ProductEntry.json.
+
+In the case of a duplicate product, the system should not insert the item into the product table.
+
+We should link the existing item to the seller in the appropriate table SellerProduct.
+
+Here are some contraints we should guarantee on database level:
+- The same product should not be inserted twice in the SellerProduct table (same SellerProductId and ProductId)
+- we should not have two products with the exact same product name, brand and category on product table
+- we should refactor the product table to have brands and categories as external tables, having only the brandid and categoryid in the product table
+- a product should be associated with more than one category (e.g. we may list iphone as mobile phones and also eletronics categories)
+- in the categories table, all category names should have the same case
+- in the brands table, brand names may be written using different cases, but we should consider brand names with capital letter and lower case as a single brand (Apple is the same of apple)
+- for minimal accountability, add an extra created and updated column to all the tables.
+
+Produce a Python 3 application based on FastAPI, the click command line library and Alembic for database migrations. Start first by bootstraping the application, create the database migration, indexes for effective performance and a command line user interface to run the migrations.
+
+After that, product a command to import a json file and populate the tables properly. Each import atempt also should be recorded in a table, containg a timestamp, filename, a md5 hash of the file, its file size (in bytes) and some counters (number of products created, products updated, number of duplicate products). The command should receive a file and a sellerid as parameters.
+
+Add an REST API to enable listing the following information (minimum information bellow, but the API could be more extensive and complete, depending on the database scheme):
+- brands (ids, names)
+- categories (ids, names)
+- sellers (ids, names)
+- products, enabling optional filtering by brand, category
+
+All API should be GETs and do not change database content, only list information.
+
+All API methods should support pagination (returning 100 records by default, up to 1000 records).
+
+Also, consider in the database design the possible scenario where a file is imported in the wrong seller. In this situation we should be able to rollback the database changes and restore the database state to something similar to the situation we had before the mistake.
+
+Finally, produce unit tests for the code, providing at least 85% of test coverage.
+
+Also, product dockerfiles and build a docker image to run the application (the docker image should be able to run the API, habing the database file mounted in a volume and also run the migration command line reading JSON from arbitrary paths). No need to have API methods to import JSON files (for now).
+
+Produce a mermaid (markdown) diagram showing the database structure.
+
+Evaluate all these requirements and write a plan to be reviewed before its actual code is produced.

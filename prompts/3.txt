@@ -1,0 +1,3 @@
+One more adjust related to undo operations: instead of rely on file names (that users can change), store a md5 hash of each file imported. During undo processing, require the md5 hash as parameter (do not rely on file names). While md5 hashs are not very user friendly, we should consider that undo operations are not day-to-day situations, but use md5 hash as parameters should be safer.
+
+Update the plan one more time. No code yet.

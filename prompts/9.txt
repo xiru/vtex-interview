@@ -1,0 +1,21 @@
+Multiple tables have a Name and NameKey columns. Let's try to review the plan to have only Name column, simplify the database model and avoid data inconsistencies. We should adopt posgresql and document the tradeoffs of that decision.
+
+Notice that postgresql usage imply running it from docker image and the project code should cover its initial data load as part of the migration process: we would be starting with an sqlite and producing data inside a postgresql, future migrations would run on postgresql only. Implement this using a "make psqlmigrate". If needed, craft special docker compose files for the initial migration scenario and a "standard" docker compose for normal software execution (that will have only postgresql database and no sqlite).
+
+Adjust "make build" to run even if audit fails: it is OK to show warnings but move ahead and build the docker images. The other validations for make build are fine (builds the Docker images only if lint, type-check, tests, coverage but audit is optional).
+
+Reviewing the specification, it is unclear if we will be able to undo an undo operation. Make sure it is possible to undo and undo operation (and cover it with proper testing).
+
+It is also unclear if it is possible do undo a merge (unmerge?). Please document what is the expected behavior (and it is OK do not support this scenario if it adds too much complexity).
+
+Python lint looks too strict. Make sure that pep8 recommendations are observed, but no reason to be too strict.
+
+Adopt unit testing on python using pytest framework.
+
+Remember to document when import/merge conflicts may happen, if any.
+
+Produce a README.md file that explains what the project do, how to build, run tests and run it. Produce a different DESIGN.md file that explains its design, how the database tables work, how import and merge procedures work, how to run the commands and use the user interface.
+
+Consider the default house name "VTEX". Make sure this is updated in all needed places (and we have a configuration variable in the top level that enable us to change this string easily).
+
+Update the plan one more time, for another round of review. No code yet.
