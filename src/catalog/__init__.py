@@ -1,0 +1,1 @@
+"""Marketplace catalog consolidation."""

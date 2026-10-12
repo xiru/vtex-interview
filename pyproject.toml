@@ -1,0 +1,73 @@
+[build-system]
+requires = ["setuptools>=80"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "catalog"
+version = "1.0.0"
+description = "Marketplace catalog consolidation: imports seller catalogs, deduplicates products, links sellers."
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "fastapi",
+    "uvicorn",
+    "pydantic",
+    "sqlalchemy",
+    "psycopg[binary]",
+    "alembic",
+    "click",
+    "nh3",
+]
+
+[project.scripts]
+catalog = "catalog.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+catalog = ["migrations/*.mako", "migrations/*.ini"]
+
+# --------------------------------------------------------------------------- lint
+[tool.ruff]
+line-length = 99
+target-version = "py314"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+# PEP 8 (pycodestyle E/W), pyflakes, import sorting, bugbear and pyupgrade.
+select = ["E", "W", "F", "I", "B", "UP"]
+
+[tool.ruff.lint.per-file-ignores]
+# click options / FastAPI dependencies use calls in argument defaults by design.
+"src/catalog/api/**" = ["B008"]
+
+[tool.mypy]
+python_version = "3.14"
+check_untyped_defs = true
+warn_unused_ignores = true
+ignore_missing_imports = true
+plugins = ["pydantic.mypy"]
+files = ["src/catalog"]
+
+# --------------------------------------------------------------------------- tests
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra --strict-markers"
+markers = [
+    "unit: pure tests, no database or docker required",
+    "integration: tests that need the PostgreSQL test database",
+]
+
+[tool.coverage.run]
+branch = true
+source = ["catalog"]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true
+fail_under = 85
+exclude_also = [
+    "if TYPE_CHECKING:",
+    "if __name__ == .__main__.:",
+]

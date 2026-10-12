@@ -1,0 +1,10 @@
+# Development / test tooling (compiled with hashes into requirements-dev.lock).
+-c requirements.lock
+-r requirements.in
+pytest==9.1.1
+pytest-cov==7.1.0
+httpx2==2.13.1
+ruff==0.17.0
+mypy==2.4.0
+pip-audit==2.10.1
+pip-tools==7.6.2
