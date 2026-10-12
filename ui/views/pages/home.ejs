@@ -1,0 +1,23 @@
+<%- include('../partials/header') %>
+<h1 class="h3 mb-4">Consolidated catalog</h1>
+<div class="row g-3 mb-4">
+  <% for (const [label, value, href] of [['Products', stats.products, '/products'], ['Brands', stats.brands, '/brands'], ['Categories', stats.categories, '/categories'], ['Sellers', stats.sellers, '/sellers'], ['Offers', stats.offers, '/sellers']]) { %>
+    <div class="col-6 col-md">
+      <a class="card text-decoration-none h-100" href="<%= href %>">
+        <div class="card-body"><div class="text-muted small"><%= label %></div><div class="fs-3"><%= value %></div></div>
+      </a>
+    </div>
+  <% } %>
+</div>
+<h2 class="h5">Latest import</h2>
+<% if (stats.last_import) { const i = stats.last_import; %>
+  <p>
+    <a href="/imports/<%= i.id %>">Import <%= i.id %></a> of <strong><%= i.file_name %></strong>
+    on <%= formatDate(i.started_at) %>
+    <span class="badge text-bg-<%= statusClass(i.status) %>"><%= i.status %></span>
+    — <%= i.products_created %> new products, <%= i.offers_created %> new offers.
+  </p>
+<% } else { %>
+  <p class="text-muted">No imports yet.</p>
+<% } %>
+<%- include('../partials/footer') %>

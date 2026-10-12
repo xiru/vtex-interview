@@ -1,0 +1,32 @@
+{
+  "name": "catalog-ui",
+  "version": "1.0.0",
+  "description": "Read-only web UI for the catalog consolidation API (server-side rendered).",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "start": "node src/server.js",
+    "test": "node -e \"require('node:fs').mkdirSync('../reports/ui',{recursive:true})\" && c8 node --test --test-reporter=spec --test-reporter-destination=stdout --test-reporter=junit --test-reporter-destination=../reports/ui/junit.xml 'test/**/*.test.js'",
+    "lint": "eslint . && prettier --check .",
+    "format": "eslint --fix . && prettier --write ."
+  },
+  "dependencies": {
+    "bootstrap": "5.3.8",
+    "ejs": "7.0.1",
+    "express": "5.3.0",
+    "helmet": "8.3.0",
+    "morgan": "1.12.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "c8": "12.0.0",
+    "eslint": "10.12.0",
+    "eslint-plugin-n": "18.4.1",
+    "globals": "17.13.0",
+    "prettier": "3.9.10",
+    "supertest": "7.3.1"
+  }
+}

@@ -1,0 +1,8 @@
+node_modules
+coverage
+test
+*.md
+.c8rc.json
+eslint.config.js
+.prettierrc.json
+.prettierignore

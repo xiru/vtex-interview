@@ -1,0 +1,19 @@
+<%- include('../partials/header') %>
+<h1 class="h3">Merges</h1>
+<table class="table table-sm">
+  <thead><tr><th>Operation</th><th>Created</th><th>Origin</th><th>Status</th><th>Entity</th><th>Kept</th><th>Merged</th><th>Undo (CLI)</th></tr></thead>
+  <tbody>
+  <% for (const m of merges) { const base = m.entity_type === 'category' ? '/categories/' : (m.entity_type === 'brand' ? '/brands/' : '/products/'); %>
+    <tr>
+      <td><%= m.operation_id %></td><td class="small"><%= formatDate(m.created) %></td><td><%= m.origin %></td>
+      <td><span class="badge text-bg-<%= statusClass(m.status) %>"><%= m.status %></span></td>
+      <td><%= m.entity_type %></td>
+      <td><a href="<%= base %><%= m.kept_id %>"><%= m.kept_id %></a></td>
+      <td><% if (m.merged_id) { %><a href="<%= base %><%= m.merged_id %>?show_inactive=1"><%= m.merged_id %></a><% } else { %>spelling "<%= m.merged_name %>"<% } %></td>
+      <td><% if (m.origin === 'manual') { %><code class="small">catalog merge undo <%= m.operation_id %></code><% } else { %><span class="text-muted small">not undoable</span><% } %></td>
+    </tr>
+  <% } %>
+  </tbody>
+</table>
+<%- include('../partials/pagination', { pager }) %>
+<%- include('../partials/footer') %>

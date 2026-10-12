@@ -1,0 +1,18 @@
+<%- include('../partials/header') %>
+<h1 class="h3">Undo history</h1>
+<p class="text-muted small">Every undo can itself be reverted from the command line (<code>catalog undo revert ID</code>).</p>
+<table class="table table-sm">
+  <thead><tr><th>Operation</th><th>Created</th><th>Kind</th><th>Status</th><th>Targets</th><th class="text-end">Reverted</th><th class="text-end">Conflicts</th><th>Revert (CLI)</th></tr></thead>
+  <tbody>
+  <% for (const u of undos) { %>
+    <tr>
+      <td><%= u.operation_id %></td><td class="small"><%= formatDate(u.created) %></td><td><%= u.undo_kind %></td>
+      <td><span class="badge text-bg-<%= statusClass(u.status) %>"><%= u.status %></span></td>
+      <td><%= u.targets.join(', ') %></td><td class="text-end"><%= u.changes_reverted %></td><td class="text-end"><%= u.conflicts_skipped %></td>
+      <td><code class="small">catalog undo revert <%= u.operation_id %></code></td>
+    </tr>
+  <% } %>
+  </tbody>
+</table>
+<%- include('../partials/pagination', { pager }) %>
+<%- include('../partials/footer') %>

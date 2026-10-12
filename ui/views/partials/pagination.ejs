@@ -1,0 +1,9 @@
+<% if (pager.pages > 1) { %>
+<nav aria-label="pagination" class="d-flex align-items-center gap-3 my-3">
+  <% if (pager.prev) { %><a class="btn btn-sm btn-outline-secondary" href="<%= pager.prev %>">&larr; Previous</a><% } %>
+  <span class="text-muted">Page <%= pager.page %> of <%= pager.pages %> (<%= pager.total %> records)</span>
+  <% if (pager.next) { %><a class="btn btn-sm btn-outline-secondary" href="<%= pager.next %>">Next &rarr;</a><% } %>
+</nav>
+<% } else { %>
+<p class="text-muted small my-3"><%= pager.total %> record(s)</p>
+<% } %>

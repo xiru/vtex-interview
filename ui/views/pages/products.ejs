@@ -1,0 +1,13 @@
+<%- include('../partials/header') %>
+<h1 class="h3">Products</h1>
+<form class="row g-2 my-3" method="get" action="/products">
+  <div class="col-md-3"><input class="form-control" name="q" placeholder="Name contains" value="<%= filters.q %>"></div>
+  <div class="col-md-2"><input class="form-control" name="brand" placeholder="Brand" value="<%= filters.brand %>"></div>
+  <div class="col-md-2"><input class="form-control" name="category" placeholder="Category" value="<%= filters.category %>"></div>
+  <div class="col-md-2"><input class="form-control" name="seller" placeholder="Seller" value="<%= filters.seller %>"></div>
+  <% if (showInactive) { %><input type="hidden" name="show_inactive" value="1"><% } %>
+  <div class="col-md-3"><button class="btn btn-primary" type="submit">Filter</button> <a class="btn btn-link" href="/products">Clear</a></div>
+</form>
+<%- include('../partials/product-table', { products }) %>
+<%- include('../partials/pagination', { pager }) %>
+<%- include('../partials/footer') %>

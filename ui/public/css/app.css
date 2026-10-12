@@ -1,0 +1,9 @@
+/* Small adjustments on top of Bootstrap (no JavaScript is used anywhere in the UI). */
+code {
+  word-break: break-all;
+}
+
+.table td,
+.table th {
+  vertical-align: middle;
+}

@@ -1,0 +1,18 @@
+<%- include('../partials/header') %>
+<p class="text-muted mb-1"><a href="/sellers">Sellers</a></p>
+<h1 class="h3"><%= seller.name %> <small class="text-muted fs-6"><%= seller.offer_count %> active offers</small></h1>
+<table class="table table-sm table-hover mt-3">
+  <thead><tr><th>Seller's description</th><th>Seller's brand / category</th><th>Catalog product</th><th>Brand</th></tr></thead>
+  <tbody>
+  <% for (const o of offers) { %>
+    <tr class="<%= o.active ? '' : 'table-secondary' %>">
+      <td><%= o.name %><br><code class="small text-muted"><%= o.seller_product_id %></code></td>
+      <td><%= o.brand_name ?? '—' %> / <%= o.category_name ?? '—' %></td>
+      <td><a href="/products/<%= o.product.id %>"><%= o.product.name %></a></td>
+      <td><% if (o.brand) { %><a href="/brands/<%= o.brand.id %>"><%= o.brand.name %></a><% } else { %>—<% } %></td>
+    </tr>
+  <% } %>
+  </tbody>
+</table>
+<%- include('../partials/pagination', { pager }) %>
+<%- include('../partials/footer') %>

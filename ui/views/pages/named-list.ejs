@@ -1,0 +1,21 @@
+<%- include('../partials/header') %>
+<h1 class="h3"><%= title %></h1>
+<form class="row g-2 my-3" method="get" action="/<%= kind %>">
+  <div class="col-md-4"><input class="form-control" name="q" placeholder="Name contains" value="<%= q %>"></div>
+  <% if (showInactive) { %><input type="hidden" name="show_inactive" value="1"><% } %>
+  <div class="col-md-3"><button class="btn btn-primary" type="submit">Search</button></div>
+</form>
+<table class="table table-sm table-hover">
+  <thead><tr><th>Name</th><th class="text-end">Products</th></tr></thead>
+  <tbody>
+  <% for (const item of items) { %>
+    <tr class="<%= item.active ? '' : 'table-secondary' %>">
+      <td><a href="/<%= kind %>/<%= item.id %><%= showInactive ? '?show_inactive=1' : '' %>"><%= item.name %></a>
+        <% if (item.merged_into_id) { %><span class="badge text-bg-info">merged into <%= item.merged_into_id %></span><% } %></td>
+      <td class="text-end"><%= item.product_count %></td>
+    </tr>
+  <% } %>
+  </tbody>
+</table>
+<%- include('../partials/pagination', { pager }) %>
+<%- include('../partials/footer') %>

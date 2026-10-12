@@ -1,0 +1,16 @@
+<%- include('../partials/header') %>
+<h1 class="h3">Sellers</h1>
+<form class="row g-2 my-3" method="get" action="/sellers">
+  <div class="col-md-4"><input class="form-control" name="q" placeholder="Name contains" value="<%= q %>"></div>
+  <div class="col-md-3"><button class="btn btn-primary" type="submit">Search</button></div>
+</form>
+<table class="table table-sm table-hover">
+  <thead><tr><th>Id</th><th>Seller</th><th class="text-end">Active offers</th></tr></thead>
+  <tbody>
+  <% for (const s of sellers) { %>
+    <tr class="<%= s.active ? '' : 'table-secondary' %>"><td><%= s.id %></td><td><a href="<%= sellerPath(s.name) %>"><%= s.name %></a></td><td class="text-end"><%= s.offer_count %></td></tr>
+  <% } %>
+  </tbody>
+</table>
+<%- include('../partials/pagination', { pager }) %>
+<%- include('../partials/footer') %>

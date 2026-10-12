@@ -1,0 +1,32 @@
+<%- include('../partials/header') %>
+<h1 class="h3">Imports</h1>
+<form class="row g-2 my-3" method="get" action="/imports">
+  <div class="col-md-2"><input class="form-control" name="seller" placeholder="Seller" value="<%= filters.seller %>"></div>
+  <div class="col-md-3"><input class="form-control" name="md5" placeholder="MD5" value="<%= filters.md5 %>"></div>
+  <div class="col-md-2">
+    <select class="form-select" name="status">
+      <option value="">any status</option>
+      <% for (const s of statuses) { %><option value="<%= s %>"<%= filters.status === s ? ' selected' : '' %>><%= s %></option><% } %>
+    </select>
+  </div>
+  <div class="col-md-2"><input class="form-control" name="since" placeholder="since (ISO date)" value="<%= filters.since %>"></div>
+  <div class="col-md-3"><button class="btn btn-primary" type="submit">Filter</button> <a class="btn btn-link" href="/imports">Clear</a></div>
+</form>
+<table class="table table-sm table-hover align-middle">
+  <thead><tr><th>Id</th><th>Started</th><th>Status</th><th>File</th><th>MD5</th><th class="text-end">Records</th><th class="text-end">New products</th><th class="text-end">New offers</th><th class="text-end">Invalid</th></tr></thead>
+  <tbody>
+  <% for (const i of imports) { %>
+    <tr>
+      <td><a href="/imports/<%= i.id %>"><%= i.id %></a></td>
+      <td class="small"><%= formatDate(i.started_at) %></td>
+      <td><span class="badge text-bg-<%= statusClass(i.status) %>"><%= i.status %></span></td>
+      <td><%= i.file_name %></td>
+      <td><code class="user-select-all small"><%= i.md5 %></code></td>
+      <td class="text-end"><%= i.total_records %></td><td class="text-end"><%= i.products_created %></td>
+      <td class="text-end"><%= i.offers_created %></td><td class="text-end"><%= i.invalid_records %></td>
+    </tr>
+  <% } %>
+  </tbody>
+</table>
+<%- include('../partials/pagination', { pager }) %>
+<%- include('../partials/footer') %>

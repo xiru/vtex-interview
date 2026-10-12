@@ -1,0 +1,42 @@
+<%- include('../partials/header') %>
+<p class="text-muted mb-1"><a href="/imports">Imports</a></p>
+<h1 class="h3">Import <%= item.id %> <span class="badge text-bg-<%= statusClass(item.status) %>"><%= item.status %></span></h1>
+<dl class="row">
+  <dt class="col-sm-3">File (as recorded)</dt><dd class="col-sm-9"><%= item.file_name %> — <%= formatBytes(item.file_size) %></dd>
+  <dt class="col-sm-3">MD5 (file identity)</dt><dd class="col-sm-9"><code class="user-select-all"><%= item.md5 %></code></dd>
+  <dt class="col-sm-3">Started / finished</dt><dd class="col-sm-9"><%= formatDate(item.started_at) %> / <%= formatDate(item.finished_at) %></dd>
+  <dt class="col-sm-3">UUID validation</dt><dd class="col-sm-9"><code><%= item.id_validation %></code></dd>
+  <% if (item.error_message) { %><dt class="col-sm-3">Error</dt><dd class="col-sm-9 text-danger"><%= item.error_message %></dd><% } %>
+</dl>
+<h2 class="h5">Counters</h2>
+<table class="table table-sm w-auto">
+  <% for (const key of ['total_records', 'invalid_records', 'skipped_records', 'sellers_created', 'products_created', 'products_updated', 'duplicate_products', 'offers_created', 'offers_updated', 'unchanged']) { %>
+    <tr><th class="fw-normal"><%= key.replaceAll('_', ' ') %></th><td class="text-end"><%= item[key] %></td></tr>
+  <% } %>
+</table>
+<h2 class="h5">Per seller</h2>
+<table class="table table-sm">
+  <thead><tr><th>Seller</th><th>Counters</th></tr></thead>
+  <tbody>
+  <% for (const [name, counters] of Object.entries(item.per_seller)) { %>
+    <tr><td><a href="<%= sellerPath(name) %>"><%= name %></a></td>
+      <td class="small"><% for (const [k, v] of Object.entries(counters)) { %><span class="me-3"><%= k.replaceAll('_', ' ') %>: <%= v %></span><% } %></td></tr>
+  <% } %>
+  </tbody>
+</table>
+<% if (item.rejections.length) { %>
+  <h2 class="h5">Rejected / skipped records</h2>
+  <table class="table table-sm w-auto">
+    <thead><tr><th>Record #</th><th>Rule</th><th>Field</th></tr></thead>
+    <tbody><% for (const r of item.rejections) { %><tr><td><%= r.index %></td><td><code><%= r.code %></code></td><td><%= r.field ?? '' %></td></tr><% } %></tbody>
+  </table>
+<% } %>
+<h2 class="h5">Undo (command line only)</h2>
+<p class="text-muted small">This interface is read-only. To undo this file, run:</p>
+<pre class="bg-light p-2 border"><code class="user-select-all">catalog import undo --md5 <%= item.md5 %></code></pre>
+<% if (item.undos.length) { %>
+  <p>Related undo operations:
+    <% for (const u of item.undos) { %><code class="me-2">catalog undo revert <%= u %></code><% } %>
+  </p>
+<% } %>
+<%- include('../partials/footer') %>

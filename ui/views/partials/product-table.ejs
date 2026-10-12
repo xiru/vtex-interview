@@ -1,0 +1,22 @@
+<table class="table table-sm table-hover align-middle">
+  <thead><tr><th>Product</th><th>Brand</th><th>Categories</th><th>Sold by</th></tr></thead>
+  <tbody>
+  <% for (const p of products) { %>
+    <tr class="<%= p.active ? '' : 'table-secondary' %>">
+      <td>
+        <a href="/products/<%= p.id %>"><%= p.name %></a>
+        <% if (!p.active) { %><span class="badge text-bg-secondary">inactive</span><% } %>
+        <% if (p.merged_into_id) { %><span class="badge text-bg-info">merged into <%= p.merged_into_id %></span><% } %>
+      </td>
+      <td><% if (p.brand) { %><a href="/brands/<%= p.brand.id %>"><%= p.brand.name %></a><% } else { %><span class="text-muted">—</span><% } %></td>
+      <td>
+        <% for (const c of p.categories) { %><a class="badge text-bg-light text-decoration-none" href="/categories/<%= c.id %>"><%= c.name %></a> <% } %>
+      </td>
+      <td>
+        <% for (const s of p.sellers) { %><a class="badge text-bg-primary text-decoration-none" href="<%= sellerPath(s.name) %>"><%= s.name %></a> <% } %>
+      </td>
+    </tr>
+  <% } %>
+  <% if (products.length === 0) { %><tr><td colspan="4" class="text-muted">No products.</td></tr><% } %>
+  </tbody>
+</table>

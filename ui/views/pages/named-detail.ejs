@@ -1,0 +1,21 @@
+<%- include('../partials/header') %>
+<p class="text-muted mb-1"><a href="/<%= kind %>"><%= kind === 'brands' ? 'Brands' : 'Categories' %></a></p>
+<h1 class="h3"><%= entity.name %> <small class="text-muted fs-6"><%= entity.product_count %> products</small></h1>
+<div class="row mt-3">
+  <div class="col-lg-9">
+    <%- include('../partials/product-table', { products }) %>
+    <%- include('../partials/pagination', { pager }) %>
+  </div>
+  <div class="col-lg-3">
+    <h2 class="h6">Sellers <%= kind === 'brands' ? 'of this brand' : 'in this category' %></h2>
+    <ul class="list-group">
+      <% for (const s of sellers) { %>
+        <li class="list-group-item d-flex justify-content-between">
+          <a href="<%= sellerPath(s.name) %>"><%= s.name %></a><span class="badge text-bg-secondary"><%= s.product_count %></span>
+        </li>
+      <% } %>
+      <% if (sellers.length === 0) { %><li class="list-group-item text-muted">No sellers.</li><% } %>
+    </ul>
+  </div>
+</div>
+<%- include('../partials/footer') %>

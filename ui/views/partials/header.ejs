@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title><%= title %> · Catalog</title>
+  <link rel="stylesheet" href="/static/bootstrap.min.css">
+  <link rel="stylesheet" href="/static/css/app.css">
+</head>
+<body>
+<nav class="navbar navbar-expand navbar-dark bg-dark mb-4">
+  <div class="container">
+    <a class="navbar-brand" href="/">Catalog</a>
+    <ul class="navbar-nav me-auto">
+      <% for (const [href, label] of [['/products', 'Products'], ['/brands', 'Brands'], ['/categories', 'Categories'], ['/sellers', 'Sellers'], ['/imports', 'Imports'], ['/merges', 'Merges'], ['/undos', 'Undos']]) { %>
+        <li class="nav-item"><a class="nav-link<%= path.startsWith(href) ? ' active' : '' %>" href="<%= href %>"><%= label %></a></li>
+      <% } %>
+    </ul>
+    <% if (toggleInactiveHref) { %>
+      <a class="btn btn-sm <%= showInactive ? 'btn-warning' : 'btn-outline-light' %>" href="<%= toggleInactiveHref %>">
+        <%= showInactive ? 'Showing inactive' : 'Show inactive' %>
+      </a>
+    <% } %>
+  </div>
+</nav>
+<main class="container pb-5">
