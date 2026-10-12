@@ -21,7 +21,9 @@ How it works — data model, matching rules, undo engine, conflicts — is descr
 ## Requirements
 
 - Docker with Compose v2 (`docker compose`) and GNU make — enough to build and run everything.
-- For local development and running the checks: Python 3.14 and Node.js 24.
+- For local development and running the checks: Python 3.14 and Node.js 24 (if you have any 
+  issue trying to configure your local development environment, I would recommend my
+  [devenv](https://github.com/xiru/devenv) project).
 
 ## Quick start
 
