@@ -1,0 +1,6 @@
+# Allow-list: the API image only needs the locked requirements and the package source.
+*
+!requirements.lock
+!src/
+**/__pycache__
+**/*.egg-info

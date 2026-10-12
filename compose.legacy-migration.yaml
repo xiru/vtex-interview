@@ -1,0 +1,28 @@
+# One-time initial migration: legacy SQLite -> PostgreSQL (used by `make psqlmigrate`).
+# Shares the project name and the pgdata volume with compose.yaml, so the loaded catalog is
+# what the standard stack serves. The SQLite file is mounted read-only and never modified.
+name: catalog
+
+services:
+  postgres:
+    extends:
+      file: compose.yaml
+      service: postgres
+
+  legacy-migrate:
+    image: catalog-api:latest
+    command: ["db", "upgrade", "--legacy-sqlite", "/legacy/catalog.db"]
+    environment:
+      DATABASE_URL: postgresql+psycopg://catalog_owner:${CATALOG_OWNER_PASSWORD:?set CATALOG_OWNER_PASSWORD in .env}@postgres:5432/catalog
+      HOUSE_SELLER_NAME: ${HOUSE_SELLER_NAME:-VTEX}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+    volumes:
+      - ${LEGACY_SQLITE:-./data/catalog.db}:/legacy/catalog.db:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      disable: true
+
+volumes:
+  pgdata:

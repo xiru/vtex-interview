@@ -1,0 +1,85 @@
+# Standard runtime: PostgreSQL only (no SQLite). Settings come from .env (see .env.example).
+# The database must be initialized once with `make psqlmigrate` (compose.legacy-migration.yaml).
+name: catalog
+
+x-catalog-env: &catalog-env
+  DATABASE_URL: postgresql+psycopg://catalog_owner:${CATALOG_OWNER_PASSWORD:?set CATALOG_OWNER_PASSWORD in .env}@postgres:5432/catalog
+  HOUSE_SELLER_NAME: ${HOUSE_SELLER_NAME:-VTEX}
+  LOG_LEVEL: ${LOG_LEVEL:-INFO}
+  ID_VALIDATION_MODE: ${ID_VALIDATION_MODE:-lenient}
+  ID_ALLOWED_VERSIONS: ${ID_ALLOWED_VERSIONS:-4,7}
+
+services:
+  postgres:
+    image: postgres:18-alpine@sha256:77f585114c32fbca283dc835b0596f4e52b51b4c6662d7810b2f4084f60a1873
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: catalog
+      POSTGRES_INITDB_ARGS: "--locale-provider=builtin --builtin-locale=C.UTF-8"
+      CATALOG_OWNER_PASSWORD: ${CATALOG_OWNER_PASSWORD:?set CATALOG_OWNER_PASSWORD in .env}
+      CATALOG_READER_PASSWORD: ${CATALOG_READER_PASSWORD:?set CATALOG_READER_PASSWORD in .env}
+    volumes:
+      - pgdata:/var/lib/postgresql
+      - ./docker/postgres/initdb:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      # TCP check: the temporary server used while init scripts run only listens on a socket.
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U postgres -d catalog"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+    restart: unless-stopped
+
+  migrate:
+    image: catalog-api:latest
+    command: ["db", "upgrade"]
+    environment: *catalog-env
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      disable: true
+    restart: "no"
+
+  api:
+    image: catalog-api:latest
+    build: .
+    command: ["serve", "--host", "0.0.0.0", "--port", "8000"]
+    environment:
+      <<: *catalog-env
+      API_DATABASE_URL: postgresql+psycopg://catalog_reader:${CATALOG_READER_PASSWORD:?set CATALOG_READER_PASSWORD in .env}@postgres:5432/catalog
+      CORS_ORIGINS: ${CORS_ORIGINS:-}
+    ports:
+      - "${API_PORT:-8000}:8000"
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    restart: unless-stopped
+
+  ui:
+    image: catalog-ui:latest
+    build: ./ui
+    environment:
+      API_BASE_URL: http://api:8000/api/v1
+      API_TIMEOUT_MS: ${API_TIMEOUT_MS:-5000}
+    ports:
+      - "${UI_PORT:-8080}:8080"
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: unless-stopped
+
+  cli:
+    image: catalog-api:latest
+    profiles: ["tools"]
+    environment: *catalog-env
+    volumes:
+      - ${IMPORT_DIR:-./data}:/imports:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      disable: true
+
+volumes:
+  pgdata:
