@@ -28,13 +28,13 @@ python_tests() {
     start_test_db
     mkdir -p "$REPORTS/python"
     run_step "pytest (unit + integration, coverage >= 85%)" \
-        "$VENV/bin/pytest" \
+        "$VENV_BIN/pytest" \
         --cov --cov-report=term \
         --cov-report="xml:$REPORTS/python/coverage.xml" \
         --cov-report="html:$REPORTS/python/html" \
         --junitxml="$REPORTS/python/junit.xml" "$@"
     run_step "coverage gate: catalog.validation >= 95%" \
-        "$VENV/bin/coverage" report --include='src/catalog/validation/*' --fail-under=95 \
+        "$VENV_BIN/coverage" report --include='src/catalog/validation/*' --fail-under=95 \
         --skip-covered
 }
 
@@ -47,7 +47,7 @@ ui_tests() {
 case "$suite" in
     unit)
         require_venv
-        run_step "pytest -m unit" "$VENV/bin/pytest" -m unit -q "$@"
+        run_step "pytest -m unit" "$VENV_BIN/pytest" -m unit -q "$@"
         ;;
     api) python_tests "$@" ;;
     ui) ui_tests ;;

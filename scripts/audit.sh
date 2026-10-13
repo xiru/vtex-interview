@@ -8,7 +8,7 @@ require_venv
 cd "$ROOT"
 status=0
 run_step "pip-audit (requirements.lock)" \
-    "$VENV/bin/pip-audit" --disable-pip --require-hashes -r requirements.lock || status=1
+    "$VENV_BIN/pip-audit" --disable-pip --require-hashes -r requirements.lock || status=1
 run_step "npm audit (ui, production deps)" \
     bash -c 'cd ui && npm audit --omit=dev --audit-level=moderate' || status=1
 exit $status

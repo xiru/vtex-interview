@@ -542,7 +542,8 @@ for template includes, enforced by a test) and the Content-Security-Policy forbi
 
 ## 11. Technology stack
 
-Python 3.14 (FastAPI, Pydantic 2, SQLAlchemy 2.1 Core, psycopg 3, Alembic, click, nh3),
+Python 3.14 in the Docker image, 3.12+ for local development (FastAPI, Pydantic 2, SQLAlchemy
+2.1 Core, psycopg 3, Alembic, click, nh3),
 PostgreSQL 18.6, Node.js 24 (Express 5, EJS 7, helmet, morgan, Bootstrap 5.3 CSS only). Tests:
 pytest + pytest-cov, httpx2 (FastAPI test client), node:test + supertest + c8. Lint: ruff (PEP 8
 and a few bug-finding rule sets, line length 99), mypy, ESLint, Prettier, shellcheck. Every

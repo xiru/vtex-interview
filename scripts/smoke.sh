@@ -26,7 +26,7 @@ check() {
     shift
     if "$@"; then pass "$name"; else fail "$name"; failures=$((failures + 1)); fi
 }
-json() { curl -fsS "$1" | "$PY" -c "import json,sys; d=json.load(sys.stdin); print($2)"; }
+json() { curl -fsS "$1" | "$PY" -c "import json,sys; d=json.load(sys.stdin); print($2)" | tr -d '\r'; }
 
 cleanup
 info "legacy migration (compose.legacy-migration.yaml)"
@@ -54,12 +54,12 @@ check "api brand filter (Apple)" test "$(json "$api/products?brand=apple&limit=1
 check "api product uuids are v7" test \
     "$(json "$api/products?limit=1000" "all(i['uuid'][14] == '7' for i in d['items'])")" = "True"
 check "api category sellers" test "$(json "$api/categories/1/sellers" "d['total'] > 0")" = "True"
-check "api rejects POST (405)" test "$(curl -s -o /dev/null -w '%{http_code}' -X POST "$api/products")" = "405"
+check "api rejects POST (405)" test "$(curl -s -o "$DEVNULL" -w '%{http_code}' -X POST "$api/products")" = "405"
 for page in / /products /brands/30 /categories/1 /sellers/MegaStore /imports /merges /undos; do
-    check "ui GET $page" curl -fsS -o /dev/null "$ui$page"
+    check "ui GET $page" curl -fsS -o "$DEVNULL" "$ui$page"
 done
 check "ui shows MegaStore catalog" bash -c "curl -fsS '$ui/sellers/MegaStore' | grep -q 'Smartphone Galaxy S23'"
-check "ui rejects POST (405)" test "$(curl -s -o /dev/null -w '%{http_code}' -X POST "$ui/")" = "405"
+check "ui rejects POST (405)" test "$(curl -s -o "$DEVNULL" -w '%{http_code}' -X POST "$ui/")" = "405"
 
 docker compose run --rm cli import undo --md5 "$md5" --yes >/dev/null
 check "undo by md5: back to 975 products" test "$(json "$api/stats" "d['products']")" = "975"

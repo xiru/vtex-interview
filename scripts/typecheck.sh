@@ -5,4 +5,4 @@ set -euo pipefail
 source "$(dirname "$0")/lib.sh"
 require_venv
 cd "$ROOT"
-run_step "mypy" "$VENV/bin/mypy"
+run_step "mypy" "$VENV_BIN/mypy"

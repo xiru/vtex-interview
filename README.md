@@ -21,9 +21,28 @@ How it works — data model, matching rules, undo engine, conflicts — is descr
 ## Requirements
 
 - Docker with Compose v2 (`docker compose`) and GNU make — enough to build and run everything.
-- For local development and running the checks: Python 3.14 and Node.js 24 (if you have any 
+- For local development and running the checks: Python 3.12 or newer (3.12 is Ubuntu 24.04's
+  default `python3`; the Docker image runs 3.14) and Node.js 24 (if you have any
   issue trying to configure your local development environment, I would recommend my
   [devenv](https://github.com/xiru/devenv) project).
+
+### Windows 11 and WSL
+
+The same `make` targets work on Linux (including Ubuntu on WSL) and natively on Windows 11:
+
+- **Windows (PowerShell or cmd)**: install Docker Desktop, [Git for Windows](https://gitforwindows.org/)
+  (its Git Bash runs the recipes and scripts; `grep`, `awk`, `curl` etc. come from it) and GNU
+  make (`winget install ezwinports.make`). The newest Python >= 3.12 is found as
+  `python3.1x`, `python3`, `python` or `py -3` (or set `PYTHON=`). If Git is installed in a path with spaces and 8.3 short names
+  are disabled on the drive, set `GIT_BASH` to a copy of `bash.exe` in a path without spaces.
+- **WSL (Ubuntu 24.04)**: install `make`, `python3-venv` and Node.js 24 inside WSL and use Docker
+  Desktop's WSL integration. Prefer cloning into the WSL filesystem (`~/...`); if you share one
+  checkout under `/mnt/c` with Windows, run `make clean` before `make setup` when switching
+  sides, because the `.venv` and `ui/node_modules` of one OS do not work on the other.
+
+`.gitattributes` forces LF line endings, so scripts work even with `core.autocrlf=true`. If
+you cloned before it existed, refresh the checkout once: `git rm -r --cached -q . && git reset --hard`
+(this discards uncommitted changes).
 
 ## Quick start
 
@@ -74,7 +93,8 @@ make cli ARGS="seller list"
 make cli ARGS="seller rename VTEX 'VTEX Marketplace'"
 ```
 
-Without Docker (development), the same commands run as `.venv/bin/catalog …` with
+Without Docker (development), the same commands run as `.venv/bin/catalog …`
+(`.venv\Scripts\catalog …` on Windows) with
 `DATABASE_URL` pointing at a PostgreSQL database. `catalog --help` and `catalog <command> --help`
 document every option.
 

@@ -1,0 +1,10 @@
+# Always check out text files with LF endings, also on Windows (core.autocrlf=true): shell
+# scripts run in bash and in Linux containers (docker/postgres/initdb), and prettier, ruff and
+# shellcheck expect LF.
+* text=auto eol=lf
+
+*.db binary
+*.pdf binary
+*.png binary
+*.ico binary
+*.woff2 binary

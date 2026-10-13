@@ -3,9 +3,40 @@
 
 # Variables below are used by the scripts that source this file.
 # shellcheck disable=SC2034
-ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-VENV="${VENV:-$ROOT/.venv}"
-PY="$VENV/bin/python"
+case "${OSTYPE:-}" in
+    msys* | cygwin*) IS_WINDOWS=1 ;;
+    *) IS_WINDOWS=0 ;;
+esac
+if [[ $IS_WINDOWS -eq 1 ]]; then
+    # Git Bash on Windows: use C:/... paths (understood by bash and by native programs such as
+    # docker, python and node) and stop bash from rewriting /container/paths arguments.
+    export MSYS_NO_PATHCONV=1
+    ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -W)"
+    VENV="${VENV:-$ROOT/.venv}"
+    VENV_BIN="$VENV/Scripts"
+    PY="$VENV_BIN/python.exe"
+    # Null device for native programs' file arguments (curl -o); bash redirections still use /dev/null.
+    DEVNULL=NUL
+else
+    ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+    VENV="${VENV:-$ROOT/.venv}"
+    VENV_BIN="$VENV/bin"
+    PY="$VENV_BIN/python"
+    DEVNULL=/dev/null
+    # Node.js installed with nvm is put on PATH by ~/.bashrc, i.e. only in interactive shells;
+    # make, `wsl make ...`, editors and git hooks run these scripts non-interactively. Load
+    # nvm's default node then (nvm.sh does not support `set -eu`, so relax it while sourcing).
+    if ! command -v node >/dev/null 2>&1 && [[ -s "${NVM_DIR:-$HOME/.nvm}/nvm.sh" ]]; then
+        export NVM_DIR="${NVM_DIR:-$HOME/.nvm}"
+        _opts=$-
+        set +eu
+        # shellcheck source=/dev/null
+        source "$NVM_DIR/nvm.sh" >/dev/null 2>&1
+        [[ $_opts == *e* ]] && set -e
+        [[ $_opts == *u* ]] && set -u
+        unset _opts
+    fi
+fi
 REPORTS="$ROOT/reports"
 COMPOSE_TEST=(docker compose -f "$ROOT/compose.test.yaml")
 

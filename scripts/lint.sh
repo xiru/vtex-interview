@@ -12,13 +12,13 @@ status=0
 
 cd "$ROOT"
 if [[ $fix -eq 1 ]]; then
-    run_step "ruff fix" "$VENV/bin/ruff" check --fix src tests || status=1
-    run_step "ruff format" "$VENV/bin/ruff" format src tests || status=1
+    run_step "ruff fix" "$VENV_BIN/ruff" check --fix src tests || status=1
+    run_step "ruff format" "$VENV_BIN/ruff" format src tests || status=1
     run_step "eslint fix" bash -c 'cd ui && npx --no-install eslint --fix .' || status=1
     run_step "prettier write" bash -c 'cd ui && npx --no-install prettier --write .' || status=1
 else
-    run_step "ruff (PEP 8, pyflakes, imports, bugbear, pyupgrade)" "$VENV/bin/ruff" check src tests || status=1
-    run_step "ruff format --check" "$VENV/bin/ruff" format --check src tests || status=1
+    run_step "ruff (PEP 8, pyflakes, imports, bugbear, pyupgrade)" "$VENV_BIN/ruff" check src tests || status=1
+    run_step "ruff format --check" "$VENV_BIN/ruff" format --check src tests || status=1
     run_step "eslint (ui)" bash -c 'cd ui && npx --no-install eslint .' || status=1
     run_step "prettier --check (ui)" bash -c 'cd ui && npx --no-install prettier --check .' || status=1
 fi

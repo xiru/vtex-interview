@@ -8,3 +8,7 @@ ruff==0.17.0
 mypy==2.4.0
 pip-audit==2.10.1
 pip-tools==7.6.2
+# Windows-only dependencies (click/pytest/build -> colorama, psycopg -> tzdata). Pinned for
+# every platform because pip-compile only locks what the platform it runs on needs.
+colorama==0.4.6
+tzdata==2026.5

@@ -28,7 +28,7 @@ def code(result):
     ("value", "lenient", "strict"),
     [
         (str(uuid.uuid4()), "ok", "ok"),
-        (str(uuid.uuid7()), "ok", "ok"),
+        (make_v7(datetime.now(UTC)), "ok", "ok"),
         # sample-file style: version 4 but non-RFC variant nibble
         ("66778899-0011-4223-3445-567788990234", "ok", "INVALID_ID_VARIANT"),
         ("A1B2C3D4-E5F6-4A5B-8C9D-0E1F2A3B4C5D", "ok", "ok"),
@@ -85,7 +85,7 @@ def test_v7_timestamp_extraction():
 def test_only_v7_policy():
     only_v7 = IdPolicy(mode="strict", versions=frozenset({7}))
     assert code(validate_uuid(str(uuid.uuid4()), only_v7)) == "INVALID_ID_VERSION"
-    assert code(validate_uuid(str(uuid.uuid7()), only_v7)) == "ok"
+    assert code(validate_uuid(make_v7(datetime.now(UTC)), only_v7)) == "ok"
 
 
 def test_describe():

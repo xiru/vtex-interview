@@ -7,7 +7,7 @@ name = "catalog"
 version = "1.0.0"
 description = "Marketplace catalog consolidation: imports seller catalogs, deduplicates products, links sellers."
 readme = "README.md"
-requires-python = ">=3.14"
+requires-python = ">=3.12"
 dependencies = [
     "fastapi",
     "uvicorn",
@@ -31,7 +31,7 @@ catalog = ["migrations/*.mako", "migrations/*.ini"]
 # --------------------------------------------------------------------------- lint
 [tool.ruff]
 line-length = 99
-target-version = "py314"
+target-version = "py312"
 src = ["src", "tests"]
 
 [tool.ruff.lint]
@@ -43,7 +43,7 @@ select = ["E", "W", "F", "I", "B", "UP"]
 "src/catalog/api/**" = ["B008"]
 
 [tool.mypy]
-python_version = "3.14"
+python_version = "3.12"
 check_untyped_defs = true
 warn_unused_ignores = true
 ignore_missing_imports = true

@@ -2,6 +2,24 @@
 # Every target is a thin wrapper over scripts/*.sh or docker compose; run `make help`.
 
 SHELL := /bin/bash
+ifeq ($(OS),Windows_NT)
+# Native Windows (GNU make from winget/choco/scoop): run recipes with Git for Windows' bash.
+# make cannot use a SHELL path containing spaces, so take the 8.3 short path of the bash.exe
+# that belongs to the git on PATH. Override with GIT_BASH=C:/path/without/spaces/bash.exe.
+GIT_BASH ?= $(subst \,/,$(shell powershell -NoProfile -NonInteractive -Command "(New-Object -ComObject Scripting.FileSystemObject).GetFile((git --exec-path) + '/../../../bin/bash.exe').ShortPath"))
+ifeq ($(GIT_BASH),)
+$(error Git for Windows (Git Bash) not found: install it, or set GIT_BASH to its bin/bash.exe)
+endif
+ifneq ($(words $(GIT_BASH)),1)
+$(error GIT_BASH contains spaces ($(GIT_BASH)): set GIT_BASH to a path without spaces)
+endif
+SHELL := $(GIT_BASH)
+# Git Bash rewrites arguments that look like POSIX paths (/imports/...) for native programs.
+export MSYS_NO_PATHCONV := 1
+VENV_BIN := .venv/Scripts
+else
+VENV_BIN := .venv/bin
+endif
 .DEFAULT_GOAL := help
 
 COMPOSE        := docker compose
@@ -18,44 +36,44 @@ help: ## Show this help
 
 # ----------------------------------------------------------------------------- development
 setup: ## Create .venv (hash-verified deps), install UI deps, create .env
-	@scripts/setup.sh
+	@$(SHELL) scripts/setup.sh
 
 lint: ## ruff + format check, eslint + prettier, shellcheck (hadolint if installed)
-	@scripts/lint.sh
+	@$(SHELL) scripts/lint.sh
 
 format: ## Apply automatic lint fixes and formatting
-	@scripts/lint.sh --fix
+	@$(SHELL) scripts/lint.sh --fix
 
 typecheck: ## mypy
-	@scripts/typecheck.sh
+	@$(SHELL) scripts/typecheck.sh
 
 test: ## All tests with coverage gates (starts a throwaway PostgreSQL)
-	@scripts/test.sh all $(ARGS)
+	@$(SHELL) scripts/test.sh all $(ARGS)
 
 test-api: ## Python tests only, e.g. make test-api ARGS="-k undo -x"
-	@scripts/test.sh api $(ARGS)
+	@$(SHELL) scripts/test.sh api $(ARGS)
 
 test-ui: ## UI tests only
-	@scripts/test.sh ui
+	@$(SHELL) scripts/test.sh ui
 
 test-unit: ## Fast Python unit tests (no database, no docker)
-	@scripts/test.sh unit $(ARGS)
+	@$(SHELL) scripts/test.sh unit $(ARGS)
 
 coverage: ## Tests, then print where the HTML coverage reports are
-	@scripts/test.sh all --open
+	@$(SHELL) scripts/test.sh all --open
 
 audit: ## Known-vulnerability audit (pip-audit + npm audit)
-	@scripts/audit.sh
+	@$(SHELL) scripts/audit.sh
 
 check: ## lint + typecheck + tests (blocking) + audit (advisory)
-	@scripts/check.sh
+	@$(SHELL) scripts/check.sh
 
 lock: ## Recompile the hash-pinned Python lockfiles
-	.venv/bin/pip-compile -q --generate-hashes --allow-unsafe --strip-extras -o requirements.lock requirements.in
-	.venv/bin/pip-compile -q --generate-hashes --allow-unsafe --strip-extras -o requirements-dev.lock requirements-dev.in
+	$(VENV_BIN)/pip-compile -q --generate-hashes --allow-unsafe --strip-extras -o requirements.lock requirements.in
+	$(VENV_BIN)/pip-compile -q --generate-hashes --allow-unsafe --strip-extras -o requirements-dev.lock requirements-dev.in
 
 hooks: ## Install an optional git pre-commit hook (lint + unit tests)
-	@scripts/install-hooks.sh
+	@$(SHELL) scripts/install-hooks.sh
 
 clean: ## Remove local build/test artifacts
 	rm -rf .venv reports .coverage .pytest_cache .mypy_cache .ruff_cache src/*.egg-info \
@@ -64,14 +82,14 @@ clean: ## Remove local build/test artifacts
 
 # ----------------------------------------------------------------------------- build
 build: ## Quality gates -> docker images -> smoke test (audit is advisory)
-	@scripts/build.sh
+	@$(SHELL) scripts/build.sh
 
 smoke: ## End-to-end test of the built images (isolated compose project)
-	@scripts/smoke.sh
+	@$(SHELL) scripts/smoke.sh
 
 # ----------------------------------------------------------------------------- run
 psqlmigrate: ## One-time load of the legacy SQLite catalog into PostgreSQL (idempotent)
-	@LEGACY_SQLITE=$(LEGACY_SQLITE) scripts/psqlmigrate.sh
+	@LEGACY_SQLITE=$(LEGACY_SQLITE) $(SHELL) scripts/psqlmigrate.sh
 
 up: ## Start postgres -> migrate -> api (:8000) -> ui (:8080); never builds images
 	@docker image inspect catalog-api:latest catalog-ui:latest >/dev/null 2>&1 || \
@@ -92,7 +110,7 @@ migrate: ## Apply pending schema migrations
 
 import: ## Import a JSON file from any path: make import FILE=/path/to/entries.json
 	@test -n "$(FILE)" || { echo "usage: make import FILE=/path/to/file.json"; exit 2; }
-	IMPORT_DIR="$$(cd "$$(dirname "$(FILE)")" && pwd)" \
+	IMPORT_DIR="$$(cd "$$(dirname "$(FILE)")" && { pwd -W 2>/dev/null || pwd; })" \
 		$(COMPOSE) run --rm cli import run "/imports/$$(basename "$(FILE)")" $(ARGS)
 
 undo: ## Undo imports: make undo ARGS="--md5 <hash> [--seller NAME] [--yes]"
